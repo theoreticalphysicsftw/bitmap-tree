@@ -31,8 +31,8 @@
 
 int main()
 {
-    static constexpr uint64_t total_allocated_resources = uint64_t(1) << 32;
-    static constexpr uint64_t max_index = uint64_t(1) << 34;
+    static constexpr uint64_t total_allocated_resources = uint64_t(1) << 20;
+    static constexpr uint64_t max_index = uint64_t(1) << 36;
 
     std::random_device rd;
     std::mt19937 mt(rd());
@@ -43,10 +43,11 @@ int main()
     {
         auto rn = dist(mt);
         tree.allocate_at(rn);
+        tree.deallocate(rn);
 
-        if (!tree.is_allocated(rn))
+        if (tree.is_allocated(rn))
         {
-            std::cerr<<"Tree random allocation is broken."<<std::endl;
+            std::cerr<<"Tree deallocation is broken."<<std::endl;
         }
     }
 }

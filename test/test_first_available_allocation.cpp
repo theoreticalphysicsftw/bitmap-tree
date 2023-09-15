@@ -23,6 +23,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <iomanip>
 #include <random>
 #include <cstdint>
 
@@ -31,22 +32,42 @@
 
 int main()
 {
-    static constexpr uint64_t total_allocated_resources = uint64_t(1) << 32;
-    static constexpr uint64_t max_index = uint64_t(1) << 34;
-
+    static constexpr uint64_t total_allocated_resources = uint64_t(1) << 28;
+    static constexpr uint64_t max_index = total_allocated_resources - 1;
+    uint64_t total_ops = total_allocated_resources * 4;
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_int_distribution<uint64_t> dist(0, max_index);
 
+    auto start = std::chrono::high_resolution_clock::now();
     bmt::tree_t<uint64_t> tree;
     for (uint64_t i = 0; i < total_allocated_resources; ++i)
     {
         auto rn = dist(mt);
-        tree.allocate_at(rn);
+        auto idx = tree.allocate();
 
-        if (!tree.is_allocated(rn))
+        if (!tree.is_allocated(idx))
         {
-            std::cerr<<"Tree random allocation is broken."<<std::endl;
+            std::cerr<<"Tree first available allocation is broken."<<std::endl;
         }
     }
+
+    for (uint64_t i = 0; i < total_allocated_resources; ++i)
+    {
+        auto rn = dist(mt);
+        tree.deallocate(rn);
+
+        if (tree.is_allocated(rn))
+        {
+            std::cerr<<"Tree deallocation is broken."<<std::endl;
+        }
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto ns_passed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    auto s_passed = ns_passed / 1E9;
+
+    std::cout<<std::fixed<<std::setprecision(4);
+    std::cout<<(total_ops / s_passed) / 1E6<<" million ops per second"<<std::endl;
+    std::cout<<ns_passed / total_ops<<" nanoseconds per op"<<std::endl;
 }
