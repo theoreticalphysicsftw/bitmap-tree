@@ -529,7 +529,7 @@ namespace bmt
     }
 
     template <>
-    auto ctz<u32_t>(u32_t n) -> u32_t
+    inline auto ctz<u32_t>(u32_t n) -> u32_t
     {
         // This function is not supposed to be used on 0!
         u32_t bits = 0;
