@@ -53,17 +53,17 @@ namespace bmt
 
     // These ctz functions should not be used with n = 0!
     template <typename T>
-    auto ctz(T n) -> u32_t = delete;
+    inline auto ctz(T n) -> u32_t = delete;
 
     template <>
-    auto ctz<u64_t>(u64_t) -> u32_t;
+    inline auto ctz<u64_t>(u64_t) -> u32_t;
 
     template <>
-    auto ctz<u32_t>(u32_t) -> u32_t;
+    inline auto ctz<u32_t>(u32_t) -> u32_t;
 
     template <typename T>
         requires std::unsigned_integral<T> && sub32bit<T>
-    auto ctz(T n) -> u32_t
+    inline auto ctz(T n) -> u32_t
     {
         return ctz<u32_t>(u32_t(n));
     }
@@ -492,7 +492,7 @@ namespace bmt
 
 #if defined(_MSC_VER)
     template <>
-    auto ctz<u64_t>(u64_t n) -> u32_t
+    inline auto ctz<u64_t>(u64_t n) -> u32_t
     {
         u64_t result;
         _BitscanForward64(&result, n);
@@ -500,7 +500,7 @@ namespace bmt
     }
 
     template <>
-    auto ctz<u32_t>(u32_t) -> u32_t
+    inline auto ctz<u32_t>(u32_t) -> u32_t
     {
         u32_t result;
         _BitscanForward(&result, n);
@@ -508,19 +508,19 @@ namespace bmt
     }
 #elif defined(__GNUC__)
     template <>
-    auto ctz<u64_t>(u64_t n) -> u32_t
+    inline auto ctz<u64_t>(u64_t n) -> u32_t
     {
         return __builtin_ctzl(n);
     }
 
     template <>
-    auto ctz<u32_t>(u32_t n) -> u32_t
+    inline auto ctz<u32_t>(u32_t n) -> u32_t
     {
         return __builtin_ctz(n);
     }
 #else
     template <>
-    auto ctz<u64_t>(u64_t n) -> u32_t
+    inline auto ctz<u64_t>(u64_t n) -> u32_t
     {
         // This function is not supposed to be used on 0!
         u32_t bits = 0;
