@@ -119,6 +119,9 @@ namespace bmt
         auto allocate() -> T;
         auto deallocate(T idx) -> void_t;
 
+        auto allocated_slots() -> T;
+        auto current_capacity() -> T;
+
         static constexpr u32_t bits_per_word = node_t<T>::bits_per_word;
         static constexpr u32_t branching_factor = node_t<T>::branching_factor;
 
@@ -236,6 +239,22 @@ namespace bmt
             current_max_size *= branching_factor;
             levels++;
         }
+    }
+
+
+    template<typename T>
+        requires std::unsigned_integral<T>
+    auto tree_t<T>::allocated_slots() -> T
+    {
+        return allocated_resources;
+    }
+
+
+    template<typename T>
+        requires std::unsigned_integral<T>
+    auto tree_t<T>::current_capacity() -> T
+    {
+        return current_max_size;
     }
 
 
