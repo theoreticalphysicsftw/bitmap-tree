@@ -11,7 +11,7 @@ The tree can be sparse so very big indices are possible (if indices need to be a
 Internally it's implemented as an 32/64-ary tree of 32/64 bit integers storing the bits.
 Leaf nodes are flattened to contain 4096 available bit positions.
 
-For managing 16 777 216 resources the tree has only 3 levels and requires calculating single ctz/BitScanForward intrinsic per node.
+For managing 16 777 216 resources the tree has only 3 levels and requires calculating 3 ctz/BitScanForward intrinsics.
 
 ## Building
 
@@ -27,7 +27,7 @@ Simply include `bitmap_tree.hpp` and that's it!
 
     // We can test if the index is reserved
     assert(tree.is_allocated(idx));
-
+    
     // We can deallocate
     tree.deallocate(idx);
 
@@ -36,3 +36,11 @@ Simply include `bitmap_tree.hpp` and that's it!
     // even if the index is very big. However the level of the tree
     // might increase.
     tree.allocate_at(10000000000ull);
+
+    // We can get the total slots allocated
+    assert(tree.allocated_slots() == 1);
+
+    // The current maximum capacity can be aquired with this.
+    // The tree will automatically expand when the total
+    // allocated slots reach the capacity
+    assert(tree.current_capacity() == 4096);
